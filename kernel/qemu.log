@@ -1,2 +1,1 @@
-Invalid write at addr 0x0, size 8, region '(null)', reason: rejected
-riscv_cpu_do_interrupt: hart:0, async:0, cause:0000000000000007, epc:0x00000000800000aa, tval:0x0000000000000000, desc=fault_store
+riscv_cpu_do_interrupt: hart:0, async:0, cause:0000000000000003, epc:0x00000000800000aa, tval:0x0000000000000000, desc=breakpoint

@@ -25,6 +25,7 @@ _start:
 /* Trap entry            */
 /* ===================== */
 
+
 .section .text.trap
 .align 2  
 .globl trap_entry

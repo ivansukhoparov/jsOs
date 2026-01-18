@@ -25,8 +25,8 @@ kprint_hex(0x1234);
 kprint("\n");
  kprint("[Kernel] Boot OK\n");
 
-   // breakpoint();        // должен ВЕРНУТЬСЯ
-   // trigger_illegal();   // должен PANIC
+breakpoint();        // должен ВЕРНУТЬСЯ
+trigger_illegal();   // должен PANIC
     trigger_page_fault();// до него уже не дойдёт
   while (1) { }
 }
