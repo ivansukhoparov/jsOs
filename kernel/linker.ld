@@ -18,7 +18,11 @@ SECTIONS
     *(COMMON)
   }
 
-  /* Символ для стека (будем использовать в start.S) */
-  . = ALIGN(16);
-  _stack_top = . + 0x4000; /* 16KB стека */
+  /* --- СТЕК --- */
+  .stack (NOLOAD) : {
+    . = ALIGN(16);
+    _stack_bottom = .;
+    . = . + 0x4000;   /* 16 KB */
+    _stack_top = .;
+  }
 }

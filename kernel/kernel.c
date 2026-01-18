@@ -1,32 +1,32 @@
-#include <stdint.h>
+#include "kprint.h"
 
-#define UART0_BASE 0x10000000UL
-#define UART_THR   0x00 /* transmit holding register */
-#define UART_LSR   0x05 /* line status register */
-#define LSR_TX_IDLE 0x20
 
-static inline void mmio_write(uint64_t addr, uint8_t value) {
-  *(volatile uint8_t*)addr = value;
+void trigger_illegal(void) {
+    asm volatile (".word 0x00000000");
 }
 
-static inline uint8_t mmio_read(uint64_t addr) {
-  return *(volatile uint8_t*)addr;
+void trigger_page_fault(void) {
+    volatile uint64_t* p = (uint64_t*)0x0;
+    *p = 1;
 }
 
-static void uart_putc(char c) {
-  /* ждём, пока можно отправлять */
-  while ((mmio_read(UART0_BASE + UART_LSR) & LSR_TX_IDLE) == 0) {}
-  mmio_write(UART0_BASE + UART_THR, (uint8_t)c);
-}
-
-static void uart_puts(const char* s) {
-  while (*s) {
-    if (*s == '\n') uart_putc('\r');
-    uart_putc(*s++);
-  }
+void breakpoint(void) {
+    asm volatile ("ebreak");
 }
 
 void kmain(void) {
-  uart_puts("[Kernel] Boot OK\n");
+ 
+  kprint("SP test\n");
+kprint_hex((uint64_t)__builtin_frame_address(0));
+kprint("\n");
+kprint("Hello kernel\n");
+kprint("pc=");
+kprint_hex(0x1234);
+kprint("\n");
+ kprint("[Kernel] Boot OK\n");
+
+   // breakpoint();        // должен ВЕРНУТЬСЯ
+   // trigger_illegal();   // должен PANIC
+    trigger_page_fault();// до него уже не дойдёт
   while (1) { }
 }
