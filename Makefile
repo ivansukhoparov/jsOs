@@ -8,12 +8,7 @@ CFLAGS  := -Wall -Wextra -O2 -ffreestanding -nostdlib -nostartfiles \
          -fno-pic -fno-pie
 LDFLAGS := -T linker.ld -nostdlib -fno-pie
 
-SRCS = \
-    kernel.c \
-    kprint.c \
-	arch/riscv/trap.c \
-	panic.c \
-	_test/atrps.c
+SRCS := $(shell find . -name '*.c')
 
 OBJS = $(SRCS:.c=.o)
 
@@ -22,7 +17,7 @@ all: kernel.elf
 kernel.elf: start.o $(OBJS)
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-start.o: start.S
+start.o: arch/riscv/boot/start.S
 	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.c
@@ -41,5 +36,6 @@ run: kernel.elf
   -d guest_errors,int \
   -D qemu.log
 clean:
-	rm -f *.o kernel.elf *.log
+	rm -f *.o kernel.elf *.log */*.o  */*/*.o  */*/*/*.o 
+
 

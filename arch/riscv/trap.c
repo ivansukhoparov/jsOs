@@ -1,6 +1,6 @@
 #include "trap.h"
-#include "../../kprint.h"
-#include "../../panic.h"
+#include "../../include/kernel/kprint.h"
+#include "../../include/kernel/kpanic.h"
 
 #define MCAUSE_INTERRUPT (1ULL<<63)
 #define MCAUSE_CODE(x) ((x) & ~(1ULL<<63))

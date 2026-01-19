@@ -1,6 +1,6 @@
-#include "panic.h"
+#include "kpanic.h"
 #include "kprint.h"
-#include "arch/riscv/trap.h"
+#include "../../arch/riscv/trap.h"
 
 __attribute__((noreturn))
 void panic(const char* msg) {
