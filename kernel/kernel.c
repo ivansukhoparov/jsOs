@@ -1,32 +1,24 @@
 #include "kprint.h"
+#include "_test/atrps.h"
 
 
-void trigger_illegal(void) {
-    asm volatile (".word 0x00000000");
-}
-
-void trigger_page_fault(void) {
-    volatile uint64_t* p = (uint64_t*)0x0;
-    *p = 1;
-}
-
-void breakpoint(void) {
-    asm volatile ("ebreak");
-}
 
 void kmain(void) {
  
-  kprint("SP test\n");
-kprint_hex((uint64_t)__builtin_frame_address(0));
-kprint("\n");
-kprint("Hello kernel\n");
-kprint("pc=");
-kprint_hex(0x1234);
-kprint("\n");
  kprint("[Kernel] Boot OK\n");
+ 
+ kprint("\n[Kernel] Before breakpoint\n");
+// breakpoint(); 
+ kprint("\n[Kernel] After breakpoint\n");
 
-breakpoint();        // должен ВЕРНУТЬСЯ
-trigger_illegal();   // должен PANIC
-    trigger_page_fault();// до него уже не дойдёт
+ // kprint("\n[Kernel] Before PANIC\n");// должен PANIC
+ // trigger_illegal() ;
+ // trigger_page_fault() ;
+ // breakpoint() ;
+ // trigger_instruction_access_fault();
+ // trigger_load_access_fault() ;
+ // trigger_store_access_fault()  ;
+ // kprint("\n[Kernel] After illegal\n");
+
   while (1) { }
 }

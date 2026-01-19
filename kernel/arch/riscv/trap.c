@@ -1,73 +1,61 @@
+#include "trap.h"
 #include "../../kprint.h"
 #include "../../panic.h"
-#include "trap.h"
-#define SCAUSE_INTERRUPT (1ULL << 63)
-#define SCAUSE_CODE(x) ((x) & ~(1ULL << 63))
+
+#define MCAUSE_INTERRUPT (1ULL<<63)
+#define MCAUSE_CODE(x) ((x) & ~(1ULL<<63))
 
 enum {
-    TRAP_ILLEGAL_INSTRUCTION = 2,
-    TRAP_BREAKPOINT          = 3,
-    TRAP_LOAD_PAGE_FAULT     = 13,
-    TRAP_STORE_PAGE_FAULT    = 15,
-    TRAP_INST_PAGE_FAULT     = 12,
+    TRAP_INSTRUCTION_ACCESS_FAULT = 1,
+    TRAP_ILLEGAL_INSTRUCTION      = 2,
+    TRAP_BREAKPOINT               = 3,
+    TRAP_LOAD_ACCESS_FAULT        = 5,
+    TRAP_STORE_ACCESS_FAULT       = 7,
+    TRAP_LOAD_PAGE_FAULT          = 13,
+    TRAP_STORE_PAGE_FAULT         = 15,
+    TRAP_INST_PAGE_FAULT          = 12,
 };
 
+static inline uint64_t insn_len(uint64_t pc) {
+    uint16_t i16 = *(uint16_t*)pc;
+    return ((i16 & 0x3) == 0x3) ? 4 : 2; // 11b => 32-bit, иначе 16-bit
+}
 
+void trap_handler(TrapFrame* tf) {
+    uint64_t cause = tf->mcause;
+    uint64_t code  = MCAUSE_CODE(cause);
 
-
-void trap_handler(uint64_t mepc,
-                  uint64_t mcause,
-                  uint64_t mtval){
-   uint64_t cause = mcause;
-    uint64_t code  = SCAUSE_CODE(cause);
-
-
-        kprint("mepc "); kprint_hex(mepc); kprint("\n");
-        kprint("mcause "); kprint_hex(mcause); kprint("\n");
-        kprint("mtval "); kprint_hex(mtval); kprint("\n");
-
-        kprint("cause "); kprint_hex(cause); kprint("\n");
-        kprint("code "); kprint_hex(code); kprint("\n");
-
-        if (cause & SCAUSE_INTERRUPT) {
-        panic("unexpected interrupt");
+    if (cause & MCAUSE_INTERRUPT) {
+        panic_mtrap("unexpected interrupt", tf->mepc, tf->mcause, tf->mtval);
     }
 
-    
-
     switch (code) {
-
         case TRAP_BREAKPOINT:
             kprint("BREAKPOINT at pc=");
-            kprint_hex(mepc);
+            kprint_hex(tf->mepc);
             kprint("\n");
 
-            // ebreak = 4 байта → пропускаем инструкцию
-            mepc += 4;
-            return;
+             tf->mepc += insn_len(tf->mepc);   // пропускаем ebreak (4 байта)
+            return;          // вернёмся в asm → mret
 
-        case TRAP_ILLEGAL_INSTRUCTION:
-            panic_mtrap("illegal instruction", mepc, mcause, mtval);
+                    case TRAP_ILLEGAL_INSTRUCTION:
+            panic_mtrap("illegal instruction",tf->mepc, tf->mcause, tf->mtval);
 
         case TRAP_LOAD_PAGE_FAULT:
         case TRAP_STORE_PAGE_FAULT:
         case TRAP_INST_PAGE_FAULT:
-            panic_mtrap("page fault", mepc, mcause, mtval);
+            panic_mtrap("page fault",tf->mepc, tf->mcause, tf->mtval);
+
+        case TRAP_INSTRUCTION_ACCESS_FAULT:
+             panic_mtrap("inctuction access fault",tf->mepc, tf->mcause, tf->mtval);
+
+        case TRAP_LOAD_ACCESS_FAULT:
+             panic_mtrap("load access fault",tf->mepc, tf->mcause, tf->mtval);
+
+        case TRAP_STORE_ACCESS_FAULT:
+             panic_mtrap("store access fault",tf->mepc, tf->mcause, tf->mtval);        
 
         default:
-            panic_mtrap("unknown trap",mepc, mcause, mtval);
+            panic_mtrap("unknown trap",tf->mepc, tf->mcause, tf->mtval);
     }
-
-    // kprint("TRAP ENTERED\n");
-
-    // kprint("mcause=");
-    // kprint_hex(tf->mcause);
-    // kprint("\n");
-
-    // kprint("mepc=");
-    // kprint_hex(tf->mepc);
-    // kprint("\n");
-
-    // for (;;)
-    //     asm volatile("wfi");
 }

@@ -12,7 +12,8 @@ SRCS = \
     kernel.c \
     kprint.c \
 	arch/riscv/trap.c \
-	panic.c
+	panic.c \
+	_test/atrps.c
 
 OBJS = $(SRCS:.c=.o)
 
