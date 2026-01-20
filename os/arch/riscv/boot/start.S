@@ -1,5 +1,8 @@
 .option nopic
 
+.extern __bss_start
+.extern __bss_end
+
 /* ===================== */
 /* Точка входа ядра     */
 /* ===================== */
@@ -10,11 +13,22 @@ _start:
     /* 1. инициализируем стек */
     la sp, _stack_top
 
-    /* 2. указываем trap-вектор */
+    /* 2. очистка .bss */
+    la t0, __bss_start     /* t0 = current */
+    la t1, __bss_end       /* t1 = end */
+
+1:
+    bgeu t0, t1, 2f        /* if current >= end → done */
+    sd zero, 0(t0)         /* store 0 */
+    addi t0, t0, 8         /* RV64: 8 bytes */
+    j 1b
+
+2:
+    /* 3. указываем trap-вектор */
     la t0, trap_entry
     csrw mtvec, t0
 
-    /* 3. переходим в C-код */
+    /* 4. переходим в C-код */
     call kmain
 
 1:

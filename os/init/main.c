@@ -1,9 +1,15 @@
 #include "../include/kernel/kprint.h"
 #include "../_test/atrps.h"
+#include "../include/kernel/kpanic.h"
+int test_global;
+
 
 void kmain(void)
 {
-
+  if (test_global != 0){
+     panic("BSS not cleared");
+  }
+       
     kprint("[Kernel] Boot OK\n");
 
     kprint("\n[Kernel] Before breakpoint\n");
