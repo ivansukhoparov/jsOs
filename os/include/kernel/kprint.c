@@ -47,3 +47,29 @@ void kprint_hex(uint64_t v)
         uart_putc(hex[(v >> i) & 0xF]);
     }
 }
+
+void kprint_dec(long x) {
+    char buf[32];
+    int i = 0;
+
+    if (x == 0) {
+        kprint("0");
+        return;
+    }
+
+    if (x < 0) {
+        kprint("-");
+        x = -x;
+    }
+
+    while (x > 0 && i < (int)sizeof(buf) - 1) {
+        buf[i++] = '0' + (x % 10);
+        x /= 10;
+    }
+
+    // reverse
+    for (int j = i - 1; j >= 0; j--) {
+        char s[2] = { buf[j], 0 };
+        kprint(s);
+    }
+}

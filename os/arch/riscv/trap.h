@@ -13,6 +13,7 @@ typedef struct TrapFrame {
     uint64_t t3, t4, t5, t6;
 
     uint64_t mepc, mstatus, mcause, mtval;
+    uint64_t pad;
 } TrapFrame;
 
 void trap_handler(TrapFrame *tf);

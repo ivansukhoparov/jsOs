@@ -1,21 +1,23 @@
 #include "../include/kernel/kprint.h"
 #include "../_test/atrps.h"
 #include "../include/kernel/kpanic.h"
+#include "../_test/mm.h"
 int test_global;
 
-
-void kmain(void)
+void kmain(phys_addr_t mem_start, phys_addr_t mem_end)
 {
-  if (test_global != 0){
-     panic("BSS not cleared");
-  }
-       
+    init_page_allocator(mem_start, mem_end);
+
+    if (test_global != 0) {
+        panic("BSS not cleared");
+    }
+
     kprint("[Kernel] Boot OK\n");
 
     kprint("\n[Kernel] Before breakpoint\n");
     // breakpoint();
     kprint("\n[Kernel] After breakpoint\n");
-
+    memory_test();
     // kprint("\n[Kernel] Before PANIC\n");// должен PANIC
     // trigger_illegal();
     // trigger_page_fault() ;
