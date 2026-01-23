@@ -2,7 +2,7 @@
 
 void* kmalloc(size_t size) {
     if (size > PAGE_SIZE)
-        return NULL;
+         panic("kmalloc: invalid size");
     return alloc_page();
 }
 

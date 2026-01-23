@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "../lib/string.h"
+#include "../include/kernel/kpanic.h"
+
 #define ALIGN_UP(x, a)   (((x) + ((a) - 1)) & ~((a) - 1))
 #define PAGE_SIZE 4096
 

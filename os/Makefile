@@ -38,4 +38,7 @@ run: kernel.elf
 clean:
 	rm -f $(shell find . -name '*.o') $(shell find . -name '*.log') $(shell find . -name '*.elf')
 
+info:
+	riscv64-linux-gnu-objdump -d kernel.elf | less
+
 

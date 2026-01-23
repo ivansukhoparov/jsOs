@@ -22,6 +22,11 @@ static inline uint64_t insn_len(uint64_t pc)
     return ((i16 & 0x3) == 0x3) ? 4 : 2; // 11b => 32-bit, иначе 16-bit
 }
 
+static inline int is_timer_interrupt(TrapFrame *tf) {
+    uint64_t cause = tf->mcause;
+    return (cause >> 63) && ((cause & 0xff) == 7);
+}
+
 void trap_handler(TrapFrame *tf)
 {
     uint64_t cause = tf->mcause;
@@ -31,6 +36,13 @@ void trap_handler(TrapFrame *tf)
         panic_mtrap("unexpected interrupt", tf->mepc, tf->mcause, tf->mtval);
     }
 
+switch (tf->mcause) {
+case (1ULL<<63) | 7:
+    timer_handler(tf);
+    break;
+default:
+panic_mtrap("unexpected trap", tf->mepc, tf->mcause, tf->mtval);
+}
     switch (code) {
         case TRAP_BREAKPOINT:
             kprint("BREAKPOINT at pc=");
@@ -59,6 +71,7 @@ void trap_handler(TrapFrame *tf)
             panic_mtrap("store access fault", tf->mepc, tf->mcause, tf->mtval);
 
         default:
+        
             panic_mtrap("unknown trap", tf->mepc, tf->mcause, tf->mtval);
     }
 }

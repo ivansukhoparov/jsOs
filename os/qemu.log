@@ -1,0 +1,1 @@
+riscv_cpu_do_interrupt: hart:0, async:0, cause:0000000000000003, epc:0x0000000080000442, tval:0x0000000000000000, desc=breakpoint

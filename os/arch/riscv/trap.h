@@ -1,9 +1,6 @@
 #pragma once
 #include <stdint.h>
 
-#pragma once
-#include "stdint.h"
-
 typedef struct TrapFrame {
     uint64_t ra, sp, gp, tp;
     uint64_t t0, t1, t2;

@@ -1,0 +1,9 @@
+    megs:            64
+    display_library: sdl2
+    romimage:        file=/home/ivan/Downloads/bochs-3.0/bios/BIOS-bochs-latest
+    vgaromimage:     file=/home/ivan/Downloads/bochs-3.0/bios/VGABIOS-lgpl-latest.bin
+    ata0-master:     type=cdrom, path=/home/ivan/dev/siOS/os.iso, status=inserted
+    boot:            cdrom
+    log:             bochslog.txt
+    clock:           sync=realtime, time0=local
+    cpu:             count=1, ips=1000000
